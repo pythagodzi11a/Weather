@@ -64,10 +64,6 @@ class Config:
             return False
 
 
-# config_path = Path(__file__).parent / "config.toml"
-# with open(config_path, "r", encoding="utf-8") as config_file:
-#     config = Config(toml.load(config_file))
-
 config = Config()
 
 
@@ -115,33 +111,37 @@ class WeatherGet:
         key_id = config.key_id
 
         payload = {
-            'iat': int(time.time()) - 30,
-            'exp': int(time.time()) + 900,
-            'sub': project_id
+            "iat": int(time.time()) - 30,
+            "exp": int(time.time()) + 900,
+            "sub": project_id,
         }
-        headers = {
-            'kid': key_id
-        }
+        headers = {"kid": key_id}
 
         # Generate JWT
-        encoded_jwt = jwt.encode(payload, private_key, algorithm='EdDSA', headers=headers)
+        encoded_jwt = jwt.encode(
+            payload, private_key, algorithm="EdDSA", headers=headers
+        )
 
         return encoded_jwt
 
     async def request_content_sync(self, location: str) -> dict | None:
         # location_transform = self.geolocator.geocode(location)
-        loop =  asyncio.get_running_loop()
-        location_transform = await loop.run_in_executor(None,self.geolocator.geocode, location)
+        loop = asyncio.get_running_loop()
+        location_transform = await loop.run_in_executor(
+            None, self.geolocator.geocode, location
+        )
 
         if location_transform is None:
             return None
         else:
-            latitude, longitude = ('%.2f' % location_transform.latitude), ('%.2f' % location_transform.longitude)
+            latitude, longitude = ("%.2f" % location_transform.latitude), (
+                "%.2f" % location_transform.longitude
+            )
             url = f"https://mq4nmt56cn.re.qweatherapi.com/v7/weather/now?location={str(longitude)},{str(latitude)}"
             encoded_jwt = self.gen_jwt()
             header = {
                 "Authorization": f"Bearer {encoded_jwt}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             }
 
             async with aiohttp.ClientSession() as session:

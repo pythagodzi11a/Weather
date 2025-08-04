@@ -1,7 +1,7 @@
 import datetime
 import textwrap
 
-from ncatbot.core import (MessageChain, Image, Text, GroupMessage, PrivateMessage)
+from ncatbot.core import MessageChain, Image, Text, GroupMessage, PrivateMessage
 from ncatbot.plugin import BasePlugin, CompatibleEnrollment
 
 from .utils import WeatherGet, Config
@@ -33,7 +33,9 @@ class Weather(BasePlugin):
                         ]
                     )
 
-                    await self.api.post_private_msg(user_id=msg.user_id, rtf=message_content)
+                    await self.api.post_private_msg(
+                        user_id=msg.user_id, rtf=message_content
+                    )
 
     @bot.group_event()
     async def on_get_china_statellite_weather(self, msg: GroupMessage):
@@ -46,11 +48,13 @@ class Weather(BasePlugin):
                         [
                             Text(f"云图{"已" if status else "未"}更新"),
                             Text("最新云图："),
-                            Image(image_url)
+                            Image(image_url),
                         ]
                     )
 
-                    await self.api.post_group_msg(group_id=msg.group_id, rtf=message_content)
+                    await self.api.post_group_msg(
+                        group_id=msg.group_id, rtf=message_content
+                    )
 
     @bot.private_event()
     async def on_get_weather_private_event(self, msg: PrivateMessage):
@@ -60,26 +64,30 @@ class Weather(BasePlugin):
                     location = str(msg.raw_message)[0:-4]
 
                     if not location:
-                        await self.api.post_private_msg(user_id=msg.user_id, text="哈？你要查哪里的天气啊？")
+                        await self.api.post_private_msg(
+                            user_id=msg.user_id, text="哈？你要查哪里的天气啊？"
+                        )
                     else:
-                        weather_data = await Utils.request_content_sync(location=location)
+                        weather_data = await Utils.request_content_sync(
+                            location=location
+                        )
 
                         if weather_data is None:
                             message_local = MessageChain(
                                 Text("哈？你在找哪里啊？这是地球上的地方嘛？")
                             )
-                            await self.api.post_private_msg(user_id=msg.user_id, rtf=message_local)
+                            await self.api.post_private_msg(
+                                user_id=msg.user_id, rtf=message_local
+                            )
 
                         else:
-                            # data = await Utils.request_content_sync("北京天安门")
+
                             message_local = MessageChain(
-                                # Text(f"数据更新于{data["obsTime"]}\n"),
-                                # Text(f"温度：{data["temp"]}，体感温度为：{data["feelsLike"]}\n"),
-                                # Text(f"当前天气：{data["text"]}，{data["windDir"]}，风力：{data["windScale"]}\n"),
-                                # Text(f"相对湿度：{data["humidity"]}\n"),
-                                Text(textwrap.dedent(f"""
+                                Text(
+                                    textwrap.dedent(
+                                        f"""
                                     🌤️嗨嗨～你的小天气播报员上线啦！
-        
+
                                     下面是{location}的天气情况！
                                     现在的时间是：{datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
                                     数据更新时间是：{weather_data['obsTime']}
@@ -89,12 +97,16 @@ class Weather(BasePlugin):
                                     空气湿度是 {weather_data['humidity']}%，气压是 {weather_data['pressure']} hPa
                                     能见度大约是 {weather_data['vis']} 公里哟～
                                     过去一小时降水量是 {weather_data['precip']} mm
-        
+
                                     天气服务由和风天气驱动！
-                                    """))
+                                    """
+                                    )
+                                )
                             )
 
-                            await self.api.post_private_msg(user_id=msg.user_id, rtf=message_local)
+                            await self.api.post_private_msg(
+                                user_id=msg.user_id, rtf=message_local
+                            )
 
     @bot.group_event()
     async def on_get_weather_group_event(self, msg: GroupMessage):
@@ -104,25 +116,29 @@ class Weather(BasePlugin):
                     location = str(msg.raw_message)[0:-4]
 
                     if not location:
-                        await self.api.post_group_msg(group_id=msg.group_id, text="哈？你要查哪里的天气啊？")
+                        await self.api.post_group_msg(
+                            group_id=msg.group_id, text="哈？你要查哪里的天气啊？"
+                        )
                     else:
-                        weather_data = await Utils.request_content_sync(location=location)
+                        weather_data = await Utils.request_content_sync(
+                            location=location
+                        )
 
                         if weather_data is None:
                             message_local = MessageChain(
                                 Text("哈？你在找哪里啊？这是地球上的地方嘛？")
                             )
-                            await self.api.post_group_msg(group_id=msg.group_id, rtf=message_local)
+                            await self.api.post_group_msg(
+                                group_id=msg.group_id, rtf=message_local
+                            )
 
                         else:
                             message_local = MessageChain(
-                                # Text(f"数据更新于{data["obsTime"]}\n"),
-                                # Text(f"温度：{data["temp"]}，体感温度为：{data["feelsLike"]}\n"),
-                                # Text(f"当前天气：{data["text"]}，{data["windDir"]}，风力：{data["windScale"]}\n"),
-                                # Text(f"相对湿度：{data["humidity"]}\n"),
-                                Text(textwrap.dedent(f"""
+                                Text(
+                                    textwrap.dedent(
+                                        f"""
                                     🌤️嗨嗨～你的小天气播报员上线啦！
-        
+
                                     下面是{location}的天气情况！
                                     现在的时间是：{datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
                                     数据更新时间是：{weather_data['obsTime']}
@@ -132,9 +148,13 @@ class Weather(BasePlugin):
                                     空气湿度是 {weather_data['humidity']}%，气压是 {weather_data['pressure']} hPa
                                     能见度大约是 {weather_data['vis']} 公里哟～
                                     过去一小时降水量是 {weather_data['precip']} mm
-        
+
                                     天气服务由和风天气驱动！
-                                    """))
+                                    """
+                                    )
+                                )
                             )
 
-                            await self.api.post_group_msg(group_id=msg.group_id, rtf=message_local)
+                            await self.api.post_group_msg(
+                                group_id=msg.group_id, rtf=message_local
+                            )
