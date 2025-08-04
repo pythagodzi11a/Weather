@@ -13,7 +13,7 @@ Utils = WeatherGet()
 
 class Weather(BasePlugin):
     name = "Weather"  # 插件名称
-    version = "0.1.0"  # 插件版本
+    version = "0.1.1"  # 插件版本
     author = "pythagodzilla"  # 插件作者
     info = "今天天气怎么样？"  # 插件描述
     dependencies = {}  # 插件依赖，格式: {"插件名": "版本要求"}

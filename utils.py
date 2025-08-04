@@ -134,10 +134,8 @@ class WeatherGet:
         if location_transform is None:
             return None
         else:
-            latitude, longitude = ("%.2f" % location_transform.latitude), (
-                "%.2f" % location_transform.longitude
-            )
-            url = f"https://mq4nmt56cn.re.qweatherapi.com/v7/weather/now?location={str(longitude)},{str(latitude)}"
+            latitude, longitude = ("%.2f" % location_transform.latitude), ("%.2f" % location_transform.longitude)
+            url = f"https://{config.api_host}/v7/weather/now?location={str(longitude)},{str(latitude)}"
             encoded_jwt = self.gen_jwt()
             header = {
                 "Authorization": f"Bearer {encoded_jwt}",
