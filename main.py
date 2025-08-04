@@ -82,8 +82,7 @@ class Weather(BasePlugin):
                                 # Text(f"温度：{data["temp"]}，体感温度为：{data["feelsLike"]}\n"),
                                 # Text(f"当前天气：{data["text"]}，{data["windDir"]}，风力：{data["windScale"]}\n"),
                                 # Text(f"相对湿度：{data["humidity"]}\n"),
-                                Text(textwrap.dedent(f"""
-                                    🌤️嗨嗨～你的小天气播报员上线啦！
+                                Text(textwrap.dedent(f"""🌤️嗨嗨～你的小天气播报员上线啦！
         
                                     下面是{location}的天气情况！
                                     现在的时间是：{datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
@@ -125,8 +124,7 @@ class Weather(BasePlugin):
                                 # Text(f"温度：{data["temp"]}，体感温度为：{data["feelsLike"]}\n"),
                                 # Text(f"当前天气：{data["text"]}，{data["windDir"]}，风力：{data["windScale"]}\n"),
                                 # Text(f"相对湿度：{data["humidity"]}\n"),
-                                Text(textwrap.dedent(f"""
-                                    🌤️嗨嗨～你的小天气播报员上线啦！
+                                Text(textwrap.dedent(f"""🌤️嗨嗨～你的小天气播报员上线啦！
         
                                     下面是{location}的天气情况！
                                     现在的时间是：{datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")}
