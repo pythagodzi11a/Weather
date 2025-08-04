@@ -46,8 +46,7 @@ nominatim.openstreetmap.org。很可惜，这个服务可能由于某些原因�
 - 黑白名单开发已完成，虽然写的很答辩，但是应该能用。
 - 开发本插件的缘由是因为想做云图的延时视频。所以顺道做的这个插件。等到基本功能稳定会逐渐开放例如：保存云图到本地，生成云图动图等功能。
 - 由于本插件开发时间比较短，属于是一时兴起做的。所以很多地方处理的比较粗陋。~~比如如果你获取今日天气时没有加上地点。会报错。这个还没处理，可能在未来的一到两个版本修复。~~
-- 如果你有任何建议或者想法。欢迎在[github 仓库](https://github.com/pythagodzi11a/Weather)中反映。也可以通过邮件 *
-  *planetarydefensecouncil@outlook.com** 来联系我。
+- 如果你有任何建议或者想法。欢迎在[github 仓库](https://github.com/pythagodzi11a/Weather)中反映。也可以通过邮件 \* \*planetarydefensecouncil@outlook.com** 来联系我。
 
 ## 依赖
 
