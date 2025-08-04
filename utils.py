@@ -1,13 +1,73 @@
-import os
 import time
+from pathlib import Path
 
 import aiohttp
 import jwt
 import requests
+import toml
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from geopy import Nominatim
-from pathlib import Path
+
+
+class Config:
+    def __init__(self):
+        config_path = Path(__file__).parent / "config.toml"
+        with open(config_path, "r", encoding="utf-8") as config_file:
+            raw_info = toml.load(config_file)
+
+        private_config = raw_info.get("private", {})
+        group_config = raw_info.get("group", {})
+        he_feng_api = raw_info.get("HeFengAPI", {})
+
+        self.private_enabled = private_config["enable"]
+        self.group_enabled = group_config["enable"]
+
+        self.group_mode = group_config["mode"]
+        self.private_mode = private_config["mode"]
+        self.private_black_lists = private_config["blacklist"]
+        self.group_black_lists = group_config["blacklist"]
+        self.private_white_lists = private_config["whitelist"]
+        self.group_white_lists = group_config["whitelist"]
+
+        self.private_key = he_feng_api.get("HEFENG_PRIVATE_KEY")
+        self.key_id = he_feng_api.get("HEFENG_KEY_ID")
+        self.project_id = he_feng_api.get("HEFENG_PROJECT_ID")
+        self.api_host = he_feng_api.get("HEFENG_API_HOST")
+
+    def should_process_group(self, group_id: str) -> bool:
+        """
+
+        :param group_id:
+        :return:
+        """
+        if self.group_enabled:
+            if self.group_mode == "blacklist":
+                return False if group_id in self.group_black_lists else True
+            else:
+                return True if group_id in self.group_white_lists else False
+        else:
+            return False
+
+    def should_process_private(self, user_id: str) -> bool:
+        """
+
+        :param user_id:
+        :return:
+        """
+        if self.private_enabled:
+            if self.private_mode == "blacklist":
+                return False if user_id in self.private_black_lists else True
+            else:
+                return True if user_id in self.private_white_lists else False
+        else:
+            return False
+
+
+# config_path = Path(__file__).parent / "config.toml"
+# with open(config_path, "r", encoding="utf-8") as config_file:
+#     config = Config(toml.load(config_file))
+
+config = Config()
 
 
 class WeatherGet:
@@ -49,18 +109,9 @@ class WeatherGet:
     @staticmethod
     def gen_jwt() -> str:
 
-        env_path = Path(__file__).parent / ".env"
-        load_dotenv(env_path)
-        # Open PEM
-        private_key = os.getenv("HEFENG_PRIVATE_KEY")
-        key_id = os.getenv("HEFENG_KEY_ID")
-        project_id = os.getenv("HEFENG_PROJECT_ID")
-        #
-        #         private_key = '''-----BEGIN PRIVATE KEY-----
-        # MC4CAQAwBQYDK2VwBCIEIEqamr00vx8F4j+fX9O6MGBDaNS46OSJJVZNY2tR+R7B
-        # -----END PRIVATE KEY-----'''
-        #         key_id = "CHB3UNRPVG"
-        #         project_id = "3BE3DAPYM2"
+        private_key = config.private_key
+        project_id = config.project_id
+        key_id = config.key_id
 
         payload = {
             'iat': int(time.time()) - 30,
@@ -75,22 +126,6 @@ class WeatherGet:
         encoded_jwt = jwt.encode(payload, private_key, algorithm='EdDSA', headers=headers)
 
         return encoded_jwt
-
-    # def get_weather_information(self, loacation: str) -> str | None:
-    #     encoded_jwt = self.gen_jwt()
-    #     url = f"https://mq4nmt56cn.re.qweatherapi.com/v7/weather/now?location={loacation}"
-    #     headers_local = {
-    #         'Authorization': f"Bearer {encoded_jwt}",
-    #         "Content-Type": "application/json"
-    #     }
-    #
-    #     response = requests.get(url, headers=headers_local)
-    #
-    #     if response.status_code != 200:
-    #         return None
-    #     else:
-    #         print(response.content)
-    #         return response.content
 
     async def request_content_sync(self, location: str) -> dict | None:
         location_transform = self.geolocator.geocode(location)
