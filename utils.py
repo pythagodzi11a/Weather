@@ -1,3 +1,4 @@
+import asyncio
 import time
 from pathlib import Path
 
@@ -76,7 +77,7 @@ class WeatherGet:
         self.latest_url = ""
         self.geolocator = Nominatim(user_agent="geoapp")
 
-    def get_china_statellite_weather_image(self) -> tuple[str, bool]:
+    def get_china_satellite_weather_image(self) -> tuple[str, bool]:
 
         fy_2_url = "https://www.nmc.cn/publish/satellite/fy2.htm"
         web_meta_data = requests.get(fy_2_url).content
@@ -128,19 +129,25 @@ class WeatherGet:
         return encoded_jwt
 
     async def request_content_sync(self, location: str) -> dict | None:
-        location_transform = self.geolocator.geocode(location)
-        latitude, longitude = ('%.2f' % location_transform.latitude), ('%.2f' % location_transform.longitude)
-        url = f"https://mq4nmt56cn.re.qweatherapi.com/v7/weather/now?location={str(longitude)},{str(latitude)}"
-        encoded_jwt = self.gen_jwt()
-        header = {
-            "Authorization": f"Bearer {encoded_jwt}",
-            "Content-Type": "application/json"
-        }
+        # location_transform = self.geolocator.geocode(location)
+        loop =  asyncio.get_running_loop()
+        location_transform = await loop.run_in_executor(None,self.geolocator.geocode, location)
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url, headers=header) as response:
-                if response.status != 200:
-                    return None
-                else:
-                    data = await response.json()
-                    return data["now"]
+        if location_transform is None:
+            return None
+        else:
+            latitude, longitude = ('%.2f' % location_transform.latitude), ('%.2f' % location_transform.longitude)
+            url = f"https://mq4nmt56cn.re.qweatherapi.com/v7/weather/now?location={str(longitude)},{str(latitude)}"
+            encoded_jwt = self.gen_jwt()
+            header = {
+                "Authorization": f"Bearer {encoded_jwt}",
+                "Content-Type": "application/json"
+            }
+
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, headers=header) as response:
+                    if response.status != 200:
+                        return None
+                    else:
+                        data = await response.json()
+                        return data["now"]

@@ -1,7 +1,7 @@
 import datetime
 import textwrap
 
-from ncatbot.core import (MessageChain, Image, Text, GroupMessage, PrivateMessage, Face, Reply)
+from ncatbot.core import (MessageChain, Image, Text, GroupMessage, PrivateMessage)
 from ncatbot.plugin import BasePlugin, CompatibleEnrollment
 
 from .utils import WeatherGet, Config
@@ -23,18 +23,13 @@ class Weather(BasePlugin):
         if config.should_process_private(user_id=msg.user_id):
             if msg.message[0]["type"] == "text":
                 if msg.message[0]["data"]["text"] == "今日云图":
-                    image_url, status = Utils.get_china_statellite_weather_image()
+                    image_url, status = Utils.get_china_satellite_weather_image()
 
                     message_content = MessageChain(
                         [
                             Text(f"云图{"已" if status else "未"}更新\n"),
                             Text("最新云图："),
                             Image(image_url),
-                            [
-                                Face(123),
-                                Image(image_url),
-                                Reply(msg.message_id),
-                            ]
                         ]
                     )
 
@@ -45,7 +40,7 @@ class Weather(BasePlugin):
         if config.should_process_group(group_id=msg.group_id):
             if msg.message[0]["type"] == "text":
                 if msg.message[0]["data"]["text"] == "今日云图":
-                    image_url, status = Utils.get_china_statellite_weather_image()
+                    image_url, status = Utils.get_china_satellite_weather_image()
 
                     message_content = MessageChain(
                         [
@@ -71,7 +66,7 @@ class Weather(BasePlugin):
 
                         if weather_data is None:
                             message_local = MessageChain(
-                                Text("哈？没请求到数据！")
+                                Text("哈？你在找哪里啊？这是地球上的地方嘛？")
                             )
                             await self.api.post_private_msg(user_id=msg.user_id, rtf=message_local)
 
@@ -109,13 +104,13 @@ class Weather(BasePlugin):
                     location = str(msg.raw_message)[0:-4]
 
                     if not location:
-                        await self.api.post_private_msg(user_id=msg.user_id, text="哈？你要查哪里的天气啊？")
+                        await self.api.post_group_msg(group_id=msg.group_id, text="哈？你要查哪里的天气啊？")
                     else:
                         weather_data = await Utils.request_content_sync(location=location)
 
                         if weather_data is None:
                             message_local = MessageChain(
-                                Text("哈？没请求到数据！")
+                                Text("哈？你在找哪里啊？这是地球上的地方嘛？")
                             )
                             await self.api.post_group_msg(group_id=msg.group_id, rtf=message_local)
 
